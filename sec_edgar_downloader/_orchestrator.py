@@ -127,8 +127,10 @@ def get_to_download(cik: str, acc_num: str, doc: str) -> ToDownload:
     )
 
 
-def fetch_and_save_filings(download_metadata: DownloadMetadata, user_agent: str) -> int:
-    successfully_downloaded = 0
+def fetch_and_save_filings(
+    download_metadata: DownloadMetadata, user_agent: str
+) -> List[Dict]:
+    downloaded_filings = []
     to_download = aggregate_filings_to_download(download_metadata, user_agent)
     for td in to_download:
         try:
@@ -149,6 +151,7 @@ def fetch_and_save_filings(download_metadata: DownloadMetadata, user_agent: str)
                 if not save_location.exists():
                     primary_doc = download_filing(td.primary_doc_uri, user_agent)
                     save_document(primary_doc, save_location)
+            downloaded_filings.append({"save_location": save_location, "metadata": td})
         except Exception as e:
             print(
                 "Error occurred while downloading filing for accession number {}: {}",
@@ -156,10 +159,7 @@ def fetch_and_save_filings(download_metadata: DownloadMetadata, user_agent: str)
                 e,
             )
             continue
-
-        successfully_downloaded += 1
-
-    return successfully_downloaded
+    return downloaded_filings
 
 
 def get_ticker_to_cik_mapping(user_agent: str) -> Dict[str, str]:

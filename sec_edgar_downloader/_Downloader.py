@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from typing import ClassVar, List, Optional
+from typing import ClassVar, List, Optional, Dict
 
 from ._constants import DEFAULT_AFTER_DATE, DEFAULT_BEFORE_DATE
 from ._constants import SUPPORTED_FORMS as _SUPPORTED_FORMS
@@ -67,7 +67,7 @@ class Downloader:
         before: Optional[Date] = None,
         include_amends: bool = False,
         download_details: bool = False,
-    ) -> int:
+    ) -> List[Dict]:
         """Download filings and save them to disk.
 
         :param form: form type to download (e.g. 8-K, 10-K).
@@ -161,7 +161,7 @@ class Downloader:
                 f"Please choose from the following: {form_options}."
             )
 
-        num_downloaded = fetch_and_save_filings(
+        downloaded_filings = fetch_and_save_filings(
             DownloadMetadata(
                 self.download_folder,
                 form,
@@ -177,4 +177,4 @@ class Downloader:
             self.user_agent,
         )
 
-        return num_downloaded
+        return downloaded_filings
